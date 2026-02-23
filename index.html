@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Гра: Сенкан до слова «Життя»</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121b2f;
+      --card2:#0f172a;
+      --text:#e7eefc;
+      --muted:#a6b4d0;
+      --accent:#4da3ff;
+      --accent2:#8b5cf6;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --border:rgba(231,238,252,.12);
+      --shadow: 0 14px 35px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(77,163,255,.20), transparent 55%),
+        radial-gradient(900px 500px at 80% 30%, rgba(139,92,246,.18), transparent 55%),
+        radial-gradient(800px 700px at 50% 90%, rgba(34,197,94,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 22px;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 18px 18px 10px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(18,27,47,.92), rgba(15,23,42,.80));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    h1{
+      margin:0;
+      font-size: clamp(20px, 2.4vw, 30px);
+      letter-spacing: .2px;
+    }
+    .sub{
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 14px;
+      max-width: 64ch;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(11,18,32,.45);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .pill b{color: var(--text)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+    }
+    @media (max-width: 880px){
+      .grid{grid-template-columns: 1fr}
+    }
+    .card{
+      border: 1px solid var(--border);
+      background: rgba(18,27,47,.86);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding: 14px 16px;
+      background: rgba(15,23,42,.75);
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card .hd h2{
+      font-size: 16px;
+      margin:0;
+      color: var(--text);
+    }
+    .card .bd{
+      padding: 16px;
+    }
+    .rules{
+      display:grid;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .rules .line{
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: rgba(11,18,32,.30);
+      border-radius: 14px;
+    }
+    .rules .line b{color: var(--text)}
+    .form{
+      display:grid;
+      gap: 12px;
+    }
+    .row{
+      display:grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      background: rgba(11,18,32,.30);
+      border-radius: 14px;
+    }
+    .row label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .row label span{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .row label .hint{
+      font-size: 12px;
+      color: rgba(166,180,208,.9);
+    }
+    input[type="text"], textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(231,238,252,.14);
+      background: rgba(15,23,42,.70);
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+    }
+    textarea{min-height: 84px; resize: vertical}
+    input[type="text"]::placeholder, textarea::placeholder{color: rgba(166,180,208,.65)}
+    input[type="text"]:focus, textarea:focus{
+      border-color: rgba(77,163,255,.55);
+      box-shadow: 0 0 0 4px rgba(77,163,255,.18);
+    }
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    button{
+      appearance:none;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,.75);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-size: 14px;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+    }
+    button:active{transform: translateY(1px)}
+    button.primary{
+      background: linear-gradient(90deg, rgba(77,163,255,.85), rgba(139,92,246,.85));
+      border-color: rgba(231,238,252,.18);
+    }
+    button.ghost{
+      background: transparent;
+    }
+    button.danger{
+      background: rgba(239,68,68,.14);
+      border-color: rgba(239,68,68,.30);
+    }
+    .status{
+      display:grid;
+      gap: 10px;
+    }
+    .scorebox{
+      display:grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      background: rgba(11,18,32,.30);
+      border-radius: 14px;
+    }
+    .score-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+    }
+    .score{
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(15,23,42,.55);
+      white-space:nowrap;
+    }
+    .badge.good{border-color: rgba(34,197,94,.35); color: rgba(34,197,94,.95); background: rgba(34,197,94,.10)}
+    .badge.warn{border-color: rgba(245,158,11,.35); color: rgba(245,158,11,.95); background: rgba(245,158,11,.10)}
+    .badge.bad{border-color: rgba(239,68,68,.35); color: rgba(239,68,68,.95); background: rgba(239,68,68,.10)}
+    .checks{
+      display:grid;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .check{
+      display:flex;
+      gap: 8px;
+      align-items:flex-start;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,.45);
+      border-radius: 14px;
+    }
+    .dot{
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-top: 4px;
+      background: rgba(166,180,208,.6);
+      flex: 0 0 auto;
+    }
+    .check.ok .dot{background: var(--good)}
+    .check.warn .dot{background: var(--warn)}
+    .check.bad .dot{background: var(--bad)}
+    .preview{
+      padding: 14px 14px;
+      border: 1px dashed rgba(231,238,252,.20);
+      background: rgba(11,18,32,.30);
+      border-radius: 14px;
+      line-height: 1.55;
+      color: var(--text);
+      font-size: 15px;
+      white-space: pre-wrap;
+    }
+    .mini{
+      font-size: 12px;
+      color: rgba(166,180,208,.9);
+    }
+    .footer{
+      text-align:center;
+      color: rgba(166,180,208,.85);
+      font-size: 12px;
+      padding: 6px 0 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Гра «Склади сенкан» до слова <span style="color:var(--accent)">Життя</span></h1>
+        <div class="sub">
+          Заповни 5 рядків за правилами сенкану. Гра перевірить структуру, порахує бали та покаже результат.
+          Можеш скопіювати сенкан і здати вчителю.
+        </div>
+      </div>
+      <div class="pill" title="Мета: тренуємо словниковий запас, образність і лаконічність">
+        🎯 <b>Місія</b> +20 балів
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: FORM -->
+      <section class="card">
+        <div class="hd">
+          <h2>🎮 Рівень 1: Створи сенкан</h2>
+          <span class="badge" id="autosaveBadge">Автозбереження: ON</span>
+        </div>
+        <div class="bd">
+          <div class="rules">
+            <div class="line"><b>1 рядок</b> — 1 іменник (тема): <b>Життя</b> (вже задано)</div>
+            <div class="line"><b>2 рядок</b> — 2 прикметники (яке?): через пробіл або кому</div>
+            <div class="line"><b>3 рядок</b> — 3 дієслова (що робить?): через пробіл або кому</div>
+            <div class="line"><b>4 рядок</b> — фраза з <b>4–6 слів</b> (думка/відчуття)</div>
+            <div class="line"><b>5 рядок</b> — 1 слово-підсумок (синонім/асоціація)</div>
+          </div>
+
+          <div class="form" style="margin-top:14px">
+            <div class="row">
+              <label>
+                <span>1) Тема (іменник)</span>
+                <span class="hint">фіксовано</span>
+              </label>
+              <input type="text" value="Життя" disabled />
+              <div class="mini">Порада: в інших іграх можна зробити вибір теми зі списку.</div>
+            </div>
+
+            <div class="row">
+              <label>
+                <span>2) Два прикметники</span>
+                <span class="hint">2 слова</span>
+              </label>
+              <input id="adj" type="text" placeholder="наприклад: мінливе яскраве" autocomplete="off" />
+            </div>
+
+            <div class="row">
+              <label>
+                <span>3) Три дієслова</span>
+                <span class="hint">3 слова</span>
+              </label>
+              <input id="verbs" type="text" placeholder="наприклад: вчить дивує загартовує" autocomplete="off" />
+            </div>
+
+            <div class="row">
+              <label>
+                <span>4) Фраза (4–6 слів)</span>
+                <span class="hint">речення</span>
+              </label>
+              <textarea id="phrase" placeholder="наприклад: Дарує сенс, якщо його створюєш"></textarea>
+            </div>
+
+            <div class="row">
+              <label>
+                <span>5) Слово-підсумок</span>
+                <span class="hint">1 слово</span>
+              </label>
+              <input id="sum" type="text" placeholder="наприклад: шлях" autocomplete="off" />
+            </div>
+
+            <div class="controls">
+              <button class="primary" id="btnCheck">✅ Перевірити й порахувати</button>
+              <button class="ghost" id="btnRandom" title="Підкидає ідеї (учень може замінити)">🎲 Підказка-натхнення</button>
+              <button id="btnCopy" title="Скопіювати готовий сенкан у буфер">📋 Скопіювати сенкан</button>
+              <button class="danger" id="btnReset">🗑️ Очистити</button>
+            </div>
+            <div class="mini" id="saveNote"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: STATUS / PREVIEW -->
+      <aside class="card">
+        <div class="hd">
+          <h2>🏁 Рівень 2: Результат</h2>
+          <span class="badge" id="gradeBadge">Очікує перевірки</span>
+        </div>
+        <div class="bd">
+          <div class="status">
+            <div class="scorebox">
+              <div class="score-top">
+                <div>
+                  <div class="mini">Твій рахунок</div>
+                  <div class="score" id="score">0</div>
+                </div>
+                <div class="badge" id="rank">—</div>
+              </div>
+              <div class="mini" id="scoreHint">
+                Натисни «Перевірити», щоб отримати бали та підказки.
+              </div>
+            </div>
+
+            <div class="checks" id="checks"></div>
+
+            <div>
+              <div class="mini" style="margin-bottom:8px">Попередній перегляд сенкану</div>
+              <div class="preview" id="preview">Життя
+…
+…
+…
+…</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">
+      Порада для вчителя: можна зібрати відповіді учнів через скриншот/копіювання або додати кнопку “Надіслати на Google Form”.
+    </div>
+  </div>
+
+<script>
+  // ===== Helpers =====
+  const $ = (id) => document.getElementById(id);
+
+  const normalize = (s) =>
+    (s || "")
+      .replace(/\s+/g, " ")
+      .replace(/[“”«»]/g, '"')
+      .trim();
+
+  const splitWords = (s) => {
+    const t = normalize(s)
+      .replace(/[,;]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!t) return [];
+    return t.split(" ").filter(Boolean);
+  };
+
+  const countPhraseWords = (s) => {
+    const cleaned = normalize(s)
+      .replace(/[—–-]/g, " ")
+      .replace(/[.,!?;:()"']/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!cleaned) return 0;
+    return cleaned.split(" ").filter(Boolean).length;
+  };
+
+  const buildPreview = () => {
+    const adj = normalize($("adj").value);
+    const verbs = normalize($("verbs").value);
+    const phrase = normalize($("phrase").value);
+    const sum = normalize($("sum").value);
+
+    const lines = [
+      "Життя",
+      adj || "…",
+      verbs || "…",
+      phrase || "…",
+      sum || "…"
+    ];
+    $("preview").textContent = lines.join("\n");
+  };
+
+  const setBadge = (el, text, kind) => {
+    el.textContent = text;
+    el.classList.remove("good", "warn", "bad");
+    if (kind) el.classList.add(kind);
+  };
+
+  // ===== Autosave =====
+  const STORAGE_KEY = "syncan_life_game_v1";
+
+  const save = () => {
+    const data = {
+      adj: $("adj").value,
+      verbs: $("verbs").value,
+      phrase: $("phrase").value,
+      sum: $("sum").value,
+      ts: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const d = new Date(data.ts);
+    $("saveNote").textContent = "Збережено: " + d.toLocaleString("uk-UA");
+  };
+
+  const load = () => {
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (!data) return;
+      $("adj").value = data.adj || "";
+      $("verbs").value = data.verbs || "";
+      $("phrase").value = data.phrase || "";
+      $("sum").value = data.sum || "";
+      if (data.ts) {
+        const d = new Date(data.ts);
+        $("saveNote").textContent = "Відновлено: " + d.toLocaleString("uk-UA");
+      }
+    }catch(e){}
+  };
+
+  // ===== Game logic / scoring =====
+  function checkAndScore(){
+    buildPreview();
+
+    const adjWords = splitWords($("adj").value);
+    const verbWords = splitWords($("verbs").value);
+    const phraseText = normalize($("phrase").value);
+    const sumWords = splitWords($("sum").value);
+    const phraseCount = countPhraseWords(phraseText);
+
+    const checks = [];
+
+    // Check 2 adjectives
+    if (adjWords.length === 2) {
+      checks.push({kind:"ok", text:"2 рядок: рівно 2 слова ✅"});
+    } else if (adjWords.length === 0) {
+      checks.push({kind:"bad", text:"2 рядок: порожньо — потрібно 2 прикметники ❌"});
+    } else {
+      checks.push({kind:"warn", text:`2 рядок: зараз ${adjWords.length} слів(а) — треба 2 ⚠️`});
+    }
+
+    // Check 3 verbs
+    if (verbWords.length === 3) {
+      checks.push({kind:"ok", text:"3 рядок: рівно 3 слова ✅"});
+    } else if (verbWords.length === 0) {
+      checks.push({kind:"bad", text:"3 рядок: порожньо — потрібно 3 дієслова ❌"});
+    } else {
+      checks.push({kind:"warn", text:`3 рядок: зараз ${verbWords.length} слів(а) — треба 3 ⚠️`});
+    }
+
+    // Check phrase length 4-6 words
+    if (phraseCount >= 4 && phraseCount <= 6) {
+      checks.push({kind:"ok", text:`4 рядок: ${phraseCount} слів — у нормі ✅`});
+    } else if (phraseCount === 0) {
+      checks.push({kind:"bad", text:"4 рядок: порожньо — потрібна фраза 4–6 слів ❌"});
+    } else {
+      checks.push({kind:"warn", text:`4 рядок: ${phraseCount} слів — має бути 4–6 ⚠️`});
+    }
+
+    // Check summary word (1 word)
+    if (sumWords.length === 1) {
+      checks.push({kind:"ok", text:"5 рядок: 1 слово ✅"});
+    } else if (sumWords.length === 0) {
+      checks.push({kind:"bad", text:"5 рядок: порожньо — потрібно 1 слово ❌"});
+    } else {
+      checks.push({kind:"warn", text:`5 рядок: ${sumWords.length} слів(а) — має бути 1 ⚠️`});
+    }
+
+    // Extra style checks (soft)
+    const uniqueness = new Set([...adjWords, ...verbWords, ...sumWords].map(w => w.toLowerCase()));
+    if (uniqueness.size >= Math.max(1, adjWords.length + verbWords.length + sumWords.length - 1)) {
+      checks.push({kind:"ok", text:"Слова майже не повторюються — звучить краще ✅"});
+    } else {
+      checks.push({kind:"warn", text:"Є повтори слів — спробуй замінити на синоніми ⚠️"});
+    }
+
+    // Score
+    let score = 0;
+
+    // Structure points
+    score += (adjWords.length === 2) ? 5 : (adjWords.length > 0 ? 2 : 0);
+    score += (verbWords.length === 3) ? 5 : (verbWords.length > 0 ? 2 : 0);
+    score += (phraseCount >= 4 && phraseCount <= 6) ? 5 : (phraseCount > 0 ? 2 : 0);
+    score += (sumWords.length === 1) ? 5 : (sumWords.length > 0 ? 2 : 0);
+
+    // Bonus: filled all lines (except fixed)
+    const filled = (adjWords.length>0) + (verbWords.length>0) + (phraseCount>0) + (sumWords.length>0);
+    if (filled === 4) score += 2;
+
+    // Bonus: no duplicates (soft)
+    const totalWords = adjWords.length + verbWords.length + sumWords.length;
+    if (totalWords > 0 && uniqueness.size === totalWords) score += 2;
+
+    // Clamp
+    if (score > 20) score = 20;
+
+    // Rank / feedback
+    let rank = "—";
+    let gradeText = "Очікує перевірки";
+    let gradeKind = "warn";
+    let hint = "";
+
+    if (score >= 18){
+      rank = "🌟 Майстер сенканів";
+      gradeText = "Відмінно";
+      gradeKind = "good";
+      hint = "Структура ідеальна. Спробуй зробити фразу ще більш образною — і буде шедевр.";
+    } else if (score >= 14){
+      rank = "🔥 Дуже добре";
+      gradeText = "Добре";
+      gradeKind = "good";
+      hint = "Майже все правильно. Підправ кількість слів у проблемних рядках — і буде топ.";
+    } else if (score >= 9){
+      rank = "🧩 Є прогрес";
+      gradeText = "Потрібно допрацювати";
+      gradeKind = "warn";
+      hint = "Заповнено частково. Дотримайся кількості слів — це головне правило сенкану.";
+    } else {
+      rank = "🛠️ Початок";
+      gradeText = "Спроба";
+      gradeKind = "bad";
+      hint = "Почни з простого: 2 прикметники, 3 дієслова, фраза 4–6 слів, 1 слово-підсумок.";
+    }
+
+    // Render checks
+    const checksEl = $("checks");
+    checksEl.innerHTML = "";
+    for (const c of checks){
+      const div = document.createElement("div");
+      div.className = "check " + (c.kind === "ok" ? "ok" : c.kind === "bad" ? "bad" : "warn");
+      div.innerHTML = `<span class="dot"></span><div>${c.text}</div>`;
+      checksEl.appendChild(div);
+    }
+
+    $("score").textContent = String(score);
+    $("rank").textContent = rank;
+    setBadge($("gradeBadge"), gradeText, gradeKind);
+    $("scoreHint").textContent = hint;
+  }
+
+  // ===== Random inspiration =====
+  const ideas = {
+    adj: [
+      "крихке сильне",
+      "мінливе цінне",
+      "складне прекрасне",
+      "несподіване справжнє",
+      "коротке безмежне",
+      "тендітне вперте"
+    ],
+    verbs: [
+      "вчить змінює загартовує",
+      "дивує болить лікує",
+      "надихає веде зростає",
+      "ламає будує піднімає",
+      "сміється плаче тримає",
+      "дає забирає повертає"
+    ],
+    phrase: [
+      "Сенс народжується з наших рішень",
+      "Кожен день просить бути сміливим",
+      "Світло знаходиш навіть у темряві",
+      "Усе минає, але досвід лишається",
+      "Цінуй мить, бо вона неповторна",
+      "Створюй себе, а не чекай випадку"
+    ],
+    sum: ["шлях","вибір","досвід","рух","мить","сенс"]
+  };
+
+  function putRandom(){
+    const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+    if (!normalize($("adj").value)) $("adj").value = pick(ideas.adj);
+    if (!normalize($("verbs").value)) $("verbs").value = pick(ideas.verbs);
+    if (!normalize($("phrase").value)) $("phrase").value = pick(ideas.phrase);
+    if (!normalize($("sum").value)) $("sum").value = pick(ideas.sum);
+    buildPreview();
+    save();
+  }
+
+  // ===== Copy =====
+  async function copyPreview(){
+    buildPreview();
+    const text = $("preview").textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      $("btnCopy").textContent = "✅ Скопійовано!";
+      setTimeout(() => $("btnCopy").textContent = "📋 Скопіювати сенкан", 1200);
+    }catch(e){
+      alert("Не вдалося скопіювати (браузер заблокував доступ). Спробуй виділити текст вручну.");
+    }
+  }
+
+  // ===== Reset =====
+  function resetAll(){
+    $("adj").value = "";
+    $("verbs").value = "";
+    $("phrase").value = "";
+    $("sum").value = "";
+    localStorage.removeItem(STORAGE_KEY);
+    $("saveNote").textContent = "";
+    $("score").textContent = "0";
+    $("rank").textContent = "—";
+    $("checks").innerHTML = "";
+    setBadge($("gradeBadge"), "Очікує перевірки", "warn");
+    $("scoreHint").textContent = "Натисни «Перевірити», щоб отримати бали та підказки.";
+    buildPreview();
+  }
+
+  // ===== Events =====
+  ["adj","verbs","phrase","sum"].forEach(id => {
+    $(id).addEventListener("input", () => { buildPreview(); save(); });
+  });
+
+  $("btnCheck").addEventListener("click", (e) => { e.preventDefault(); checkAndScore(); save(); });
+  $("btnRandom").addEventListener("click", (e) => { e.preventDefault(); putRandom(); });
+  $("btnCopy").addEventListener("click", (e) => { e.preventDefault(); copyPreview(); });
+  $("btnReset").addEventListener("click", (e) => { e.preventDefault(); resetAll(); });
+
+  // Init
+  load();
+  buildPreview();
+</script>
+</body>
+</html>
